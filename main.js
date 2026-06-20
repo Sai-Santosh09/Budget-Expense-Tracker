@@ -200,4 +200,136 @@ function renderExpenses() {
     }
 }
 
+function updateTotals() {
+    var total = 0;
+    //Add all expense amounts one by one
+    for(var i = 0 ; i < expenses.length ; i++){
+        var currentAmount = expenses[i].amount;
+        total += currentAmount;
+    }
+
+    var remaining = budget - total;
+    
+    //SHow total spent and remaining amount
+    totalSpentEl.textContent = total.toFixed(2);
+    remainingBudgetEl.textContent = remaining.toFixed(2);
+
+    //show warnings if budget is crossed
+    if(remaining < 0){
+        remainingBudgetEl.classList.add("over-budget");
+    } else {
+        remainingBudgetEl.classList.remove("over-budget");
+    }
+
+    //Calculate category totals
+    if(expenses.length > 0){
+        var catTotals = {};
+
+        for(var j = 0 ; j < expenses.length ; j++){
+            var categoryName = expenses[j].category;
+
+            if(catTotals[categoryName] === undefined){
+                catTotals[categoryName] = 0;
+            }
+            catTotals[categoryName] += expenses[j].amount;
+        }
+
+        categoryBreakdownEl.innerHTML = "";
+
+        //Show each category total
+        for(var cat in catTotals) {
+            var catSum = catTotals[cat];
+            var percent = 0;
+
+            if(total > 0) {
+                percent = (catSum / total * 100).toFixed(0);
+            }
+
+            var div = document.createElement("div");
+            div.className = "breakdown-item";
+            div.textContent = cat + ": ₹" + catSum.toFixed(2) + " (" + percent + "%)";
+            categoryBreakdownEl.appendChild(div);
+        }
+    }
+}
+
+//Handle Edit and delete buttons
+expenseListEl.addEventListener("click", function (e) {
+    //Delete button
+    if(e.target.classList.contains("delete-btn")) {
+        var id = parseInt(e.target.getAttribute("data-id"));
+
+        //Find the matching expense
+        for(var i = 0 ; i < expenses.length ; i++){
+            if(expenses[i].id === id){
+                expenses.splice(i , 1);
+                break;
+            }
+        }
+        renderExpenses();
+        updateTotals();
+        saveData();
+    }
+
+    //Edit Button
+    if (e.target.classList.contains("edit-btn")) {
+        var id2 = parseInt(e.target.getAttribute("data-id"));
+
+        //Find the matching expense
+        for(var j = 0 ; j < expenses.length ; j++){
+            if(expenses[j].id === id2){
+                var exp = expenses[j];
+
+                //Put the values back into the form
+                expenseDes.value = exp.description;
+                expenseCategory.value = exp.category;
+                expenseAmount.value = exp.amount;
+                expenseDate.value = exp.date;
+
+                expenses.splice(j, 1);
+                break;
+            }
+        }
+        renderExpenses();
+        updateTotals();
+        saveData();
+    }
+});
+
+
+//Save Budget and expenses into the local storage
+function saveDate() {
+    localStorage.setItem("budget", budget);
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+}
+
+//Load budget and expenses from the local storage
+function loadData() {
+    var storedBudget = localStorage.getItem("budget");
+
+    if(storedBudget !== null){
+        budget = parseFloat(storedBudget);
+    } else {
+        budget = 0;
+    }
+
+    var storedExpenses = localStorage.getItem("expenses");
+
+    //Load expenses
+    if(storedExpenses){
+        try {
+            expenses = JSON.parse(storedExpenses);
+            if(!Array.isArray(expenses)) {
+                expenses = [];
+            }
+        } catch (e) {
+            expenses = [];
+        }
+    } else {
+        expenses = [];
+    }
+
+    //Put the budget value back into the input box
+    budgetInput.value = budget;
+}
 
