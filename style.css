@@ -1,83 +1,88 @@
 body {
     margin: 0;
-    padding: 0;
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    color: #333;
+    background: #f7f5f0;
+    color: #222;
 }
 
-header, footer {
-    background: #333;
-    color: #ffffff;
-    padding: 10px;
+header{
+    background: #ffffff;
+    padding: 20px;
     text-align: center;
+    border-bottom: 1px solid #ddd;
 }
 
 .container {
-    max-width: 800px;
+    max-width:1100px;
     margin: 20px auto;
-    padding: 10px;
+    padding:0 15px;
 }
 
 .panel {
     background: #ffffff;
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px #ccc;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
     margin-top: 0;
+    margin-bottom: 15px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-}
-
-label input, label select {
+input, select {
     width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    margin-bottom: 10px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    font-size: 15px;
 }
 
 button {
-    padding: 8px 12px;
-    margin-top: 6px;
+    padding: 12px 18px;
     border: none;
-    background: #333;
+    background: #2d2d2d;
     color: #ffffff;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
 }
 
-table, th, td{
-    border: 1px solid #bbb;
+th{
+    background: #f3f3f3;
 }
 
 th, td {
-    padding: 8px;
-    text-align: left;
+    padding: 12px;
+    border: 1px solid #ddd;
 }
 
-.breakdown-item {
-    margin: 4px 0;
+#categoryBreakdown {
+    background: #eef8f1;
+    padding: 15px;
+    border-radius: 10px;
 }
 
 .over-budget {
-    color: #dc143c;
+    color: #d62839;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    color: #666;
 }

@@ -17,43 +17,35 @@ const loadBtn = document.getElementById("loadBtn");
 const exportBtn = document.getElementById("exportBtn");
 const importInput = document.getElementById("importInput");
 
-//When the page loads show the saved data
 window.addEventListener("DOMContentLoaded", function() {
     loadData();
     renderExpenses();
     updateTotals();
 });
 
-//set budget button click
 setBudgetBtn.addEventListener("click", function() {
-    //Read the vale from the input
     var val = parseFloat(budgetInput.value);
-    //check if the value is valid or not
     if(isNaN(val) || val < 0){
         alert("Enter a valid budget amount...");
         return;
     }
     budget = val;
-    //Save and update the screen
     saveData();
     updateTotals();
 });
 
-expenseForm.addEventListener("sumbit", function(event) {
+expenseForm.addEventListener("submit", function(event) {
     event.preventDefault();
-    //Get all values from the form
     var des = expenseDes.value.trim();
     var cat = expenseCategory.value;
     var amt = parseFloat(expenseAmount.value);
     var date = expenseDate.value;
 
-    //check if smth is empty or not valid
     if(des === "" || cat === "" || isNaN(amt) || amt <= 0 || date === ""){
         alert("Please fill all the fields with valid date.");
         return;
     }
 
-    //Create a new expense object
     var expense = {
         id: Date.now(),
         description: des,
@@ -62,22 +54,16 @@ expenseForm.addEventListener("sumbit", function(event) {
         date: date
     };
 
-    //add this obj into the array
     expenses.push(expense);
-
-    //Update the table, totals and saved data
     renderExpenses();
     updateTotals();
-    saveDate();
-    //clear the form now
+    saveData();
     expenseForm.reset();
 });
-//Save button
 saveBtn.addEventListener("click", function() {
     saveData();
     alert("Data Saved.");
 });
-//Load Button 
 loadBtn.addEventListener("click", function() {
     loadData();
     renderExpenses();
@@ -85,17 +71,13 @@ loadBtn.addEventListener("click", function() {
     alert("Data Loaded..");
 });
 
-//Exporting data as a JSON file
 exportBtn.addEventListener("click", function() {
-    //create an object with all the DATA
     var data = {
         budget: budget,
         expenses: expenses
     };
 
-    //Comvert it into JSON
     var json = JSON.stringify(data);
-    //create a downloadable file of this
     var blob = new Blob([json], {type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -107,7 +89,6 @@ exportBtn.addEventListener("click", function() {
     URL.revokeObjectURL(url);
 });
 
-//Import JSON
 importInput.addEventListener("change", function(event) {
     var file = event.target.files[0];
     //if no file selected then hmm
@@ -117,15 +98,23 @@ importInput.addEventListener("change", function(event) {
 
     var reader = new FileReader();
     reader.onload = function(e) {
+        console.log(e.target.result);
         try {
-            //Read the json and convert to object
             var importedData = JSON.parse(e.target.result);
 
             if (typeof importedData.budget === "number" && Array.isArray(importedData.expenses)) {
                 budget = importedData.budget;
-                expenses = importedData.expenses;
+                expenses = importedData.expenses.filter(function (exp) {
+                    return(
+                        typeof exp.id === "number" &&
+                        typeof exp.description === "string" &&
+                        typeof exp.category === "string" &&
+                        typeof exp.amount === "number" &&
+                        typeof exp.date === "string"
+                    );
+                });
 
-                //update ui and save the imported data
+                budgetInput.value = budget;
                 renderExpenses();
                 updateTotals();
                 saveData();
@@ -134,60 +123,49 @@ importInput.addEventListener("change", function(event) {
                 alert("Invalid JSON format.");
             }
         } catch (err){
-            alert("Error parsing JSON file.");
+            console.log(err);
+            alert(err.message);
         }
     };
     reader.readAsText(file);
 });
 
-//Show all the expenses in the table
 function renderExpenses() {
-    //Clear the old rows
     expenseListEl.innerHTML = "";
 
-    //if no expense exists, show something to say nothing is added...
     if(expenses.length === 0){
         categoryBreakdownEl.textContent = "No expenses added...";
         return;
     }
 
-    //Create one row for each and every expense
     for(var i = 0 ; i < expenses.length ; i++){
         var exp = expenses[i];
 
-        //create table row
         var row = document.createElement("tr");
-        //Description cell
+
         var desCell = document.createElement("td");
         desCell.textContent = exp.description;
         row.appendChild(desCell);
 
-        //Amount Cell
         var amountCell = document.createElement("td");
         amountCell.textContent = exp.amount.toFixed(2);
         row.appendChild(amountCell);
 
-        //Category Cell
         var catCell = document.createElement("td");
         catCell.textContent = exp.category;
         row.appendChild(catCell);
 
-        //Date Cell
         var dateCell = document.createElement("td");
         dateCell.textContent = exp.date;
         row.appendChild(dateCell);
 
-        //Action buttons Cell
         var actionCell = document.createElement("td");
 
-        //Edit Button for action Cell
         var editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
         editBtn.className = "edit-btn";
         editBtn.setAttribute("data-id", exp.id);
         actionCell.appendChild(editBtn);
-
-        //Delete button for action Cell
         var deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.className = "delete-btn";
@@ -195,14 +173,12 @@ function renderExpenses() {
         actionCell.appendChild(deleteBtn);
 
         row.appendChild(actionCell);
-        //Add the row to the table
         expenseListEl.appendChild(row);
     }
 }
 
 function updateTotals() {
     var total = 0;
-    //Add all expense amounts one by one
     for(var i = 0 ; i < expenses.length ; i++){
         var currentAmount = expenses[i].amount;
         total += currentAmount;
@@ -210,18 +186,14 @@ function updateTotals() {
 
     var remaining = budget - total;
     
-    //SHow total spent and remaining amount
     totalSpentEl.textContent = total.toFixed(2);
     remainingBudgetEl.textContent = remaining.toFixed(2);
 
-    //show warnings if budget is crossed
     if(remaining < 0){
         remainingBudgetEl.classList.add("over-budget");
     } else {
         remainingBudgetEl.classList.remove("over-budget");
     }
-
-    //Calculate category totals
     if(expenses.length > 0){
         var catTotals = {};
 
@@ -235,8 +207,6 @@ function updateTotals() {
         }
 
         categoryBreakdownEl.innerHTML = "";
-
-        //Show each category total
         for(var cat in catTotals) {
             var catSum = catTotals[cat];
             var percent = 0;
@@ -252,14 +222,9 @@ function updateTotals() {
         }
     }
 }
-
-//Handle Edit and delete buttons
 expenseListEl.addEventListener("click", function (e) {
-    //Delete button
     if(e.target.classList.contains("delete-btn")) {
         var id = parseInt(e.target.getAttribute("data-id"));
-
-        //Find the matching expense
         for(var i = 0 ; i < expenses.length ; i++){
             if(expenses[i].id === id){
                 expenses.splice(i , 1);
@@ -270,17 +235,11 @@ expenseListEl.addEventListener("click", function (e) {
         updateTotals();
         saveData();
     }
-
-    //Edit Button
     if (e.target.classList.contains("edit-btn")) {
         var id2 = parseInt(e.target.getAttribute("data-id"));
-
-        //Find the matching expense
         for(var j = 0 ; j < expenses.length ; j++){
             if(expenses[j].id === id2){
                 var exp = expenses[j];
-
-                //Put the values back into the form
                 expenseDes.value = exp.description;
                 expenseCategory.value = exp.category;
                 expenseAmount.value = exp.amount;
@@ -297,25 +256,19 @@ expenseListEl.addEventListener("click", function (e) {
 });
 
 
-//Save Budget and expenses into the local storage
-function saveDate() {
+function saveData() {
     localStorage.setItem("budget", budget);
     localStorage.setItem("expenses", JSON.stringify(expenses));
 }
 
-//Load budget and expenses from the local storage
 function loadData() {
     var storedBudget = localStorage.getItem("budget");
-
     if(storedBudget !== null){
         budget = parseFloat(storedBudget);
     } else {
         budget = 0;
     }
-
     var storedExpenses = localStorage.getItem("expenses");
-
-    //Load expenses
     if(storedExpenses){
         try {
             expenses = JSON.parse(storedExpenses);
@@ -328,8 +281,6 @@ function loadData() {
     } else {
         expenses = [];
     }
-
-    //Put the budget value back into the input box
     budgetInput.value = budget;
 }
 
