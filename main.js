@@ -14,6 +14,7 @@ const expenseDate = document.getElementById("expenseDate");
 
 const expenseListEl = document.getElementById("expenseList");
 const categoryBreakdownEl = document.getElementById("categoryBreakdown");
+const sortOption = document.getElementById("sortOption");
 
 const themeToggle = document.getElementById("themeToggle");
 const saveBtn = document.getElementById("saveBtn");
@@ -143,8 +144,10 @@ function renderExpenses() {
         return;
     }
 
-    for(var i = 0 ; i < expenses.length ; i++){
-        var exp = expenses[i];
+    var sortedExpenses = getSortedExpenses();
+
+    for(var i = 0 ; i < sortedExpenses.length ; i++){
+        var exp = sortedExpenses[i];
 
         var row = document.createElement("tr");
 
@@ -171,6 +174,7 @@ function renderExpenses() {
         editBtn.className = "edit-btn";
         editBtn.setAttribute("data-id", exp.id);
         actionCell.appendChild(editBtn);
+        
         var deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.className = "delete-btn";
@@ -298,3 +302,37 @@ themeToggle.addEventListener("click", function() {
         themeToggle.textContent = "Dark Mode";
     }
 });
+
+var currentSort = "default";
+
+sortOption.addEventListener("change", function() {
+    currentSort = sortOption.value;
+    renderExpenses();
+});
+
+function getSortedExpenses() {
+    var sortedExpenses = expenses.slice();
+
+    if(currentSort === "amount-high"){
+        sortedExpenses.sort(function(a, b){
+            return b.amount - a.amount;
+        });
+    } else if(currentSort === "amount-low"){
+        sortedExpenses.sort(function(a , b) {
+            return a.amount - b.amount;
+        });
+    }else if(currentSort === "date-new"){
+        sortedExpenses.sort(function(a , b){
+            return new Date(b.date) - new Date(a.date);
+        });
+    }else if(currentSort === "date-old"){
+        sortedExpenses.sort(function(a , b) {
+            return new Date(a.date) - new Date(b.date);
+        });
+    }else if(currentSort === "name-az"){
+        sortedExpenses.sort(function(a, b) {
+            return a.description.localeCompare(b.description);
+        });
+    }
+    return sortedExpenses;
+}

@@ -175,3 +175,7 @@ body.dark-mode #categoryBreakdown {
 body.dark-mode footer {
     color: #bbb;
 }
+
+#sortOption {
+    max-width: 280px;
+}
