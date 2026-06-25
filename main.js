@@ -5,13 +5,17 @@ const budgetInput = document.getElementById("budgetInput");
 const setBudgetBtn = document.getElementById("setBudgetBtn");
 const totalSpentEl = document.getElementById("totalSpent");
 const remainingBudgetEl = document.getElementById("remainingBudget");
+
 const expenseForm = document.getElementById("expenseForm");
 const expenseDes = document.getElementById("expenseDes");
 const expenseCategory = document.getElementById("expenseCategory");
 const expenseAmount = document.getElementById("expenseAmount");
 const expenseDate = document.getElementById("expenseDate");
+
 const expenseListEl = document.getElementById("expenseList");
 const categoryBreakdownEl = document.getElementById("categoryBreakdown");
+
+const themeToggle = document.getElementById("themeToggle");
 const saveBtn = document.getElementById("saveBtn");
 const loadBtn = document.getElementById("loadBtn");
 const exportBtn = document.getElementById("exportBtn");
@@ -126,6 +130,7 @@ importInput.addEventListener("change", function(event) {
             console.log(err);
             alert(err.message);
         }
+        importInput.value = "";
     };
     reader.readAsText(file);
 });
@@ -284,3 +289,12 @@ function loadData() {
     budgetInput.value = budget;
 }
 
+themeToggle.addEventListener("click", function() {
+    document.body.classList.toggle("dark-mode");
+
+    if(document.body.classList.contains("dark-mode")) {
+        themeToggle.textContent = "Light Mode";
+    } else {
+        themeToggle.textContent = "Dark Mode";
+    }
+});
