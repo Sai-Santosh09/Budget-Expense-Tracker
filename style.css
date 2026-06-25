@@ -32,6 +32,12 @@ h2 {
     margin-bottom: 15px;
 }
 
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
 input, select {
     width: 100%;
     padding: 12px;
@@ -50,13 +56,19 @@ button {
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
+    margin: 4px 6px 4px 0;
 }
 
 button:hover {
     opacity: 0.9;
 }
 
+button:active {
+    transform: scale(0.95);
+}
+
 table {
+    margin-top: 10px;
     width: 100%;
     border-collapse: collapse;
 }
@@ -68,12 +80,38 @@ th{
 th, td {
     padding: 12px;
     border: 1px solid #ddd;
+    text-align: left;
+}
+
+td button {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.edit-btn {
+    margin-right: 6px;
+}
+
+.delete-btn {
+    background: #d62839;
+}
+
+.delete-btn:hover {
+    opacity: 0.9;
 }
 
 #categoryBreakdown {
     background: #eef8f1;
     padding: 15px;
     border-radius: 10px;
+}
+
+.breakdown-item {
+    margin-bottom: 8px;
+}
+
+#importInput {
+    margin-top: 15px;
 }
 
 .over-budget {
@@ -85,4 +123,14 @@ footer {
     text-align: center;
     padding: 15px;
     color: #666;
+}
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    button {
+        width: 100%;
+    }
 }
